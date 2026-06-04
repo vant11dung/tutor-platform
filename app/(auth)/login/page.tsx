@@ -26,46 +26,78 @@ export default function LoginPage() {
       setError(res.error);
       setIsLoading(false);
     } else {
-      // Đăng nhập thành công, tạm thời điều hướng về trang chủ
-      // (Sau này ta sẽ viết Middleware để tự động đẩy về Dashboard tương ứng)
       router.push('/');
-      router.refresh(); // Cập nhật lại trạng thái header
+      router.refresh();
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-80px)] flex">
-      <div className="hidden lg:flex lg:w-1/2 relative bg-blue-900 overflow-hidden items-center justify-center">
-        <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" alt="Login bg" className="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-overlay" />
+    <div className="min-h-[calc(100vh-80px)] flex bg-gray-50">
+      {/* Banner bên trái */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden items-center justify-center">
+        <img 
+          src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=2070&auto=format&fit=crop" 
+          alt="Login bg" 
+          className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-overlay" 
+        />
         <div className="relative z-10 text-white p-12 max-w-lg">
-          <h2 className="text-4xl font-bold mb-6">Chào mừng trở lại!</h2>
-          <p className="text-lg text-blue-100">Đăng nhập để tiếp tục hành trình học tập hoặc quản lý lịch giảng dạy của bạn một cách dễ dàng nhất.</p>
+          <h2 className="text-4xl font-bold mb-6 drop-shadow-sm">Chào mừng trở lại!</h2>
+          <p className="text-lg text-slate-200 leading-relaxed">
+            Đăng nhập để tiếp tục hành trình học tập hoặc quản lý lịch giảng dạy của bạn một cách dễ dàng nhất.
+          </p>
         </div>
       </div>
 
+      {/* Form đăng nhập bên phải */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
         <div className="max-w-md w-full space-y-8">
           <div>
-            <h2 className="text-3xl font-extrabold text-gray-900">Đăng nhập</h2>
+            <h2 className="text-3xl font-extrabold text-gray-900 tracking-tight">Đăng nhập</h2>
             <p className="mt-2 text-sm text-gray-600">
-              Chưa có tài khoản? <Link href="/register" className="font-medium text-blue-600 hover:text-blue-500">Đăng ký ngay</Link>
+              Chưa có tài khoản?{' '}
+              <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors">
+                Đăng ký ngay
+              </Link>
             </p>
           </div>
           
-          {error && <div className="bg-red-100 text-red-600 p-3 rounded-lg text-sm text-center">{error}</div>}
+          {/* Thông báo lỗi rõ ràng hơn */}
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 p-3.5 rounded-xl text-sm font-medium text-center">
+              {error}
+            </div>
+          )}
 
-          <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-4">
-              <input type="email" required placeholder="Email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                onChange={(e) => setEmail(e.target.value)} />
-              <input type="password" required placeholder="Mật khẩu"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-                onChange={(e) => setPassword(e.target.value)} />
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Email</label>
+                <input 
+                  type="email" 
+                  required 
+                  placeholder="name@example.com"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  onChange={(e) => setEmail(e.target.value)} 
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Mật khẩu</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="••••••••"
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all"
+                  onChange={(e) => setPassword(e.target.value)} 
+                />
+              </div>
             </div>
 
-            <button type="submit" disabled={isLoading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-lg transition disabled:opacity-50">
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl shadow-md shadow-blue-500/10 transition-all active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none"
+            >
               {isLoading ? 'Đang xử lý...' : 'Đăng Nhập'}
             </button>
           </form>
