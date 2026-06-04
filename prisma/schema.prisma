@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  STUDENT
+  TUTOR
+  ADMIN
+}
+
+enum TutorStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BookingStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum TeachingMode {
+  ONLINE
+  OFFLINE
+  BOTH
+}
+
+model User {
+  id                String        @id @default(cuid())
+  name              String
+  email             String        @unique
+  password          String
+  role              Role          @default(STUDENT)
+  avatar            String?       @db.Text
+  createdAt         DateTime      @default(now())
+
+  // Quan hệ với các bảng khác
+  tutorProfile      TutorProfile?
+  bookingsAsStudent Booking[]     @relation("StudentBookings")
+  reviewsGiven      Review[]      @relation("StudentReviews")
+}
+
+model TutorProfile {
+  id           String      @id @default(cuid())
+  userId       String      @unique
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  bio          String?     @db.Text
+  cvUrl        String?     // Link file CV PDF
+  hourlyRate   Int         // Mức giá theo giờ
+  subjects     String[]    // Các môn giảng dạy
+  status       TutorStatus @default(PENDING) // Trạng thái Admin duyệt
+  availableSlots String   @default("[]")
+  teachingMethod String?  @default("ONLINE")
+  teachingMode   TeachingMode @default(ONLINE)
+  availability String[]
+  certificates String[]
+  bookings     Booking[]
+  reviews      Review[]
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  studentId   String
+  tutorId     String
+  student     User          @relation("StudentBookings", fields: [studentId], references: [id], onDelete: Cascade)
+  tutor       TutorProfile  @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  
+  startTime   DateTime
+  endTime     DateTime
+  slot        String        // Lưu ca học dạng: "Thứ 2-Sáng (08:00 - 12:00)"
+  status      BookingStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  totalPrice  Int
+}
+
+model Review {
+  id          String       @id @default(cuid())
+  rating      Int          // 1 đến 5 sao
+  comment     String?      @db.Text
+  isAnonymous Boolean      @default(false)
+  studentId   String
+  student     User         @relation("StudentReviews", fields: [studentId], references: [id], onDelete: Cascade)
+  tutorId     String
+  tutor       TutorProfile @relation(fields: [tutorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now()) // <-- Thêm trường này để sắp xếp review chuẩn theo thời gian
+}
